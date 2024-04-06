@@ -1,0 +1,35 @@
+---
+import fs from 'node:fs/promises';
+
+const IMPORT_FROM_OUTSIDE = false;
+// const IMPORT_FROM_OUTSIDE = true;
+
+let url;
+let data = { test: 'No data' };
+
+if (IMPORT_FROM_OUTSIDE) {
+    // this points at the test2 file in the parent folder of the astro project
+    url = new URL('../../../../test2.json', import.meta.url);
+
+    console.log("Import meta URL:", import.meta.url);
+    console.log("Resolved URL:", url);
+
+    data = JSON.parse(await fs.readFile(url, 'utf8'));
+} else {
+    // this points at the test.json file in the root of the astro project
+    url = new URL('../../../test.json', import.meta.url);
+
+    console.log("Import meta URL:", import.meta.url);
+    console.log("Resolved URL:", url);
+
+    data = JSON.parse(await fs.readFile(url, 'utf8'));
+}
+
+// both of these work with `bun run dev` but not with `bun run build`
+// same with `npm run dev` and `npm run build`
+
+---
+
+<p>URL: {url}</p>
+
+<p>{data.test}</p>
